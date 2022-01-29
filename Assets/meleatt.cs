@@ -11,7 +11,10 @@ public class meleatt : MonoBehaviour
     public Sprite running;
     public Sprite attackSprite;
     public SpriteRenderer sr;
-
+    public GameObject enemy;
+    public GameObject player;
+    public bool isCooldown = false;
+    public float CooldownTime = 0.5f;
 
     void Start()
     {
@@ -37,9 +40,36 @@ public class meleatt : MonoBehaviour
         anim.SetBool("isAttack", true);
         Debug.Log("jedi govna");
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackpoint.position, attackrange, enemyLayers);
-        foreach (Collider2D enemy in hitEnemies)
+        if(enemy.transform.position.x <= player.transform.position.x)
         {
-            Debug.Log("We hit " + enemy.name);
+            foreach (Collider2D enemy in hitEnemies)
+            {
+                if (!isCooldown)
+                {
+                    Debug.Log("We hit " + enemy.name);
+                    enemy.GetComponent<Rigidbody2D>().AddForce(transform.up * 10 + transform.right * -10);
+                    isCooldown = true;
+                    yield return new WaitForSeconds(CooldownTime);
+                    isCooldown = false;
+                }
+            }
         }
+
+        if (enemy.transform.position.x >= player.transform.position.x)
+        {
+            foreach (Collider2D enemy in hitEnemies)
+            {
+                if (!isCooldown)
+                {
+                    Debug.Log("We hit " + enemy.name);
+                    enemy.GetComponent<Rigidbody2D>().AddForce(transform.up * 10 + transform.right * 10);
+                    isCooldown = true;
+                    yield return new WaitForSeconds(CooldownTime);
+                    isCooldown = false;
+                }
+                
+            }
+        }
+
     }
 }
